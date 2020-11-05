@@ -1,8 +1,6 @@
 
 class Student{
-    static id = 0;
     constructor( name, surname, university, avgMark){
-        this.id = ++Student.id;
         this.name = name;
         this.surname = surname;
         this.university = university;
@@ -24,13 +22,7 @@ class Worker extends Student{
     }
 
     set history(history){
-        history.sort();
-        const result = {
-            "WorkPlace" : history[2],
-            "From" : history[0],
-            "To" : history[1],
-        }
-        this._history.push(result);
+        this._history.push(history);
     }
 
     get history(){
@@ -54,34 +46,47 @@ class Worker extends Student{
 }
 
 class Company{
-    static id = 0;
-    constructor(activity, workers, name){
-        this.id = ++Company.id;
+    constructor(activity, name){
         this.name = name;
         this.activity = activity;
-        this.workers = workers;
+        this.workers = [];
         this.countWorkers = this.workers.length;
     }
     setSalaryForWorker(worker){
         worker.salary = (worker.avgMark + worker.university.prestige) * 2000;
     }
-    hire(student, profession){
-        let worker = new Worker(student.name, student.surname, student.university, student.avgMark, "work", profession);
-        this.setSalaryForWorker(worker);
-        this.workers.push(worker);
-        this.countWorkers = this.workers.length;
+    hire(person, profession){
+        let date = new Date().getFullYear();
+        if(person.__proto__ === Student.prototype){            
+            let worker = new Worker(person.name, person.surname, person.university, person.avgMark, "work", profession);
+            this.setSalaryForWorker(worker);
+            this.workers.push(worker);
+            this.countWorkers = this.workers.length;
+            worker.dateHire = date;
+            workers.push(worker);
+            students = students.filter(item => person != item);
+        } else {
+            this.setSalaryForWorker(person);
+            this.workers.push(person);
+            person.workStatus = "work";
+            person.dateHire = date;
+            this.countWorkers = this.workers.length;
+            workersUnemployer = workersUnemployer.filter(item => item != person);
+        }    
+
     }
     fire(worker){
-        let date = new Date;
-        date = date.getFullYear();
+        let date = new Date().getFullYear();
         this.workers = this.workers.filter(item => item != worker);
         worker.workStatus = "unemployed";
         worker.salary = 0;
-        worker.updateHistory([this.name, date, worker.dateHire]);
+        worker.updateHistory({"WorkPlace" :this.name,"From" :  worker.dateHire,  "To" : date,});
         delete worker.dateHire;
+        workersUnemployer.push(worker);
     }
     close(){
         this.workers.forEach(worker => {
+            workersUnemployer.push(worker);
             this.fire(worker);
         });
         for (const key in this) {
@@ -116,6 +121,7 @@ function validate(argumentsFunc, len){
     }
 }
 
+
 // ============= student functions ==================
 function createStudent(name, surname, university, avgMark){
     if(validate(arguments, arguments.callee.length) === false){
@@ -130,14 +136,43 @@ function createStudent(name, surname, university, avgMark){
     }
     students.push(new Student(name, surname, universityInfo, avgMark));
 }
+function createStudents(){
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }
+    let studentsArray = [
+        new Student('Ivan', 'Ivanov', {"name": 'Lviv Polytehnic University', "prestige": 2}, 10),
+        new Student('Petya', 'Petrov', {"name": 'Ivan Franko University', "prestige": 2}, 9),
+        new Student('Nataly', 'Ivanova', {"name": 'Lviv Forest engineering University', "prestige": 1}, 8),
+        new Student('Yuliya', 'Petrova', {"name": 'Ivan Franko University', "prestige": 3}, 7),
+        new Student('Ostap', 'Ostapov', {"name": 'Lviv Polytehnic University', "prestige": 2}, 6),
+        new Student('Mikola', 'Mikolayev', {"name": 'Ivan Franko University', "prestige": 3}, 10),
+        new Student('Serhiy', 'Serhiyev', {"name": 'Lviv Forest engineering University', "prestige": 1}, 8),
+        new Student('Olena', 'Ostapova',  {"name": 'Ivan Franko University', "prestige": 3}, 10),
+        new Student('Vitaliy', 'Vitaliyev', {"name": 'Lviv Polytehnic University', "prestige": 2}, 9),
+        new Student('Taras', 'Tarasov', {"name": 'Ivan Franko University', "prestige": 3}, 5),
+        new Student('Olexandr', 'Olexandrov', {"name": 'Lviv Forest engineering University', "prestige": 1}, 9),
+        new Student('Khrustyna', 'Olexandrova', {"name": 'Ivan Franko University', "prestige": 3}, 9),
+        new Student('Nazar', 'Nazarov', {"name": 'Lviv Polytehnic University', "prestige": 2}, 4),
+        new Student('Pavlo', 'Pavlov', {"name": 'Ivan Franko University', "prestige": 3}, 10),
+    
+        new Student('Andtiy', 'Andtiyev',{"name": 'Lviv Forest engineering University', "prestige": 1}, 9),
+        new Student('Oksana', 'Pavlova', {"name": 'Ivan Franko University', "prestige": 3}, 6),
+        new Student('Stepan', 'Stepanov', {"name": 'Lviv Polytehnic University', "prestige": 2}, 9),
+        new Student('Bogdan', 'Bogdanov', {"name": 'Ivan Franko University', "prestige": 3}, 6),
+        new Student('Igor', 'Igorov', {"name": 'Lviv Forest engineering University', "prestige": 1}, 8),
+        new Student('Maryana', 'Bogdanova', {"name": 'Ivan Franko University', "prestige": 3}, 7),
+    ];
+    students.push(...studentsArray);
+}
+
 function getBaseInfoFunc(id){
     let people = [...students];
     if(workers != undefined){
         people = [...people, ...workers];
     }
-    for (let i = 0; i < people.length; i++) {
-        return people[i].getBaseInfo();        
-    }
+    return people[id].getBaseInfo();        
 }
 // ============= worker functions ==================
 function createWorker(name, surname, university, avgMark,  workStatus, profession, salary, ...history){
@@ -163,18 +198,12 @@ function getWorkingInfoFunc(id){
         console.error(`inncorect data`);
         return false;
     }
-    let correctWorker = false;
-    for (let i = 0; i < workers.length; i++) {
-        if(workers[i].id === id){
-            return workers[i].getWorkingInfo();
-        }
-        
-    }
-
-    if(!correctWorker){
+    if (workers[id]) {
+        return workers[id].getWorkingInfo();
+    } else {
         console.error(`inncorect data, worker didn't find`);
         return false;
-    }
+    }  
 }
 
 function updateHistoryFunc(id , history){
@@ -189,24 +218,38 @@ function updateHistoryFunc(id , history){
     }
 }
 
+function unemployedWorkers(){
+    return workers.filter(item => item.workStatus === "unemployed");
+}
+
+function showWorkers(){
+    str = "Workers History and Worker Status \n";
+    workers.forEach(worker => {
+        str +=  worker.surname + " " + worker.name + "\n";
+        str += "Worker Status: " + worker.workStatus + "\n";
+        str +=  "History: \n";
+        if(worker.history.length == 0){
+            str += "no history \n"
+        } else {
+            worker.history.forEach(item => {
+                str += item.WorkPlace + "\n";
+                str += "Years: " + item.From + "-" + item.To + "\n\n";
+            })
+        }
+
+        str+= '\n' + '=================' + '\n';
+    });
+
+    return str;
+}
+
 // ============= company functions ==================
-function createCompany(activity, id, name, date){
+function createCompany(activity,  name){
     if(validate(arguments, arguments.callee.length) === false){
         console.error(`inncorect data`);
         return false;
     }
-    const companyWorkers = workers.filter( item => {
-        for(let i = 0; i < id.length; i++) {
-            if(item.id === id[i]) {
-                item["dateHire"] = date;
-                return true;
-            } 
-        }})
-    const company = new Company(activity, companyWorkers, name);
-// - setSalaryForWorker - розраховує заробітну плату працівнику базуючись на його середньому балу атестату і престижності ВНЗ
-    companyWorkers.forEach(worker => {
-        company.setSalaryForWorker(worker);
-    });
+    const company = new Company(activity,  name);
     companies.push(company);
 }
 
@@ -215,13 +258,40 @@ function hireStudent(idCompany, idStudent ,profession){
         console.error(`inncorect data`);
         return false;
     }
-    const company = companies.find(item => item.id == idCompany);
-    const student = students.find(item => item.id == idStudent);
-    if(company === undefined || student === undefined){
+    // const student = students.find(item => item.id == idStudent);
+    if(companies[idCompany] === undefined || students[idStudent] === undefined){
         console.error(`inncorect data, student didn't hire`);
         return false;
     }
-    company.hire(student, profession);
+    companies[idCompany].hire(students[idStudent], profession);
+}
+
+function hireStudents(idCompany, jobs){
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }    
+    if(companies[idCompany] === undefined){
+        console.error(`inncorect data, student didn't hire`);
+        return false;
+    }
+    students.sort((a, b) => b.avgMark - a.avgMark);    
+    // let bestStudents = students.slice(0 , 5);
+    for (let i = 0; i < 5; i++) {
+        hireStudent(idCompany, i, jobs[i]);        
+    }
+}
+
+function hireUnemployedWorker(idCompany, idWorker){
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }    
+    if(workersUnemployer[idWorker] === undefined ){
+        console.error(`inncorect data, worker didn't hire`);
+        return false;
+    }
+    companies[idCompany].hire(workersUnemployer[idWorker]);
 }
 
 function fireWorker(idCompany, idWorker){
@@ -229,13 +299,11 @@ function fireWorker(idCompany, idWorker){
         console.error(`inncorect data`);
         return false;
     }
-    const company = companies.find(item => item.id == idCompany);
-    const worker = company.workers.find(item => item.id == idWorker);
-    if(company === undefined || worker === undefined){
+    if(companies[idCompany] === undefined || workers[idWorker] === undefined){
         console.error(`inncorect data, worker didn't fire`);
         return false;
     }
-    company.fire(worker);
+    companies[idCompany].fire(companies[idCompany].workers[idWorker]);
 }
 
 function closeCompany(idCompany) {
@@ -243,68 +311,64 @@ function closeCompany(idCompany) {
         console.error(`inncorect data`);
         return false;
     }
-    let correctCompany = false;
-    for (let i = 0; i < companies.length; i++) {
-        if(companies[i].id === idCompany){
-            companies[i].close();
-            delete companies[i];   
-            correctCompany = true;         
-        }        
-    }
-    if(!correctCompany){
+    if(!companies[idCompany]){
         console.error(`inncorect data, company didn't close`);
         return false;
     }
+    companies[idCompany].close();
+    delete companies[idCompany];   
     companies = companies.filter(company => company != undefined)
 }
 
+
 let students = [];
 let workers = [];
+let workersUnemployer = [];
 let companies = [];
 
-createStudent('Ivan', 'Ivanov', ['Lviv Polytehnic University', 2], 10);
-createStudent('Petya', 'Petrov', ['Ivan Franko University', 3], 9);
-createStudent('Nataly', 'Ivanova', ['Lviv Forest engineering University',1], 8);
-createStudent('Yuliya', 'Petrova', ['Ivan Franko University', 3], 7);
-createStudent('Ostap', 'Ostapov', ['Lviv Polytehnic University', 2], 6);
-createStudent('Mikola', 'Mikolayev', ['Ivan Franko University', 3], 10);
-createStudent('Serhiy', 'Serhiyev', ['Lviv Forest engineering University',1], 8);
-createStudent('Olena', 'Ostapova', ['Ivan Franko University', 3], 10);
-createStudent('Vitaliy', 'Vitaliyev', ['Lviv Polytehnic University', 2], 9);
-createStudent('Taras', 'Tarasov', ['Ivan Franko University', 3], 5);
-createStudent('Olexandr', 'Olexandrov', ['Lviv Forest engineering University',1], 5);
-createStudent('Khrustyna', 'Olexandrova', ['Ivan Franko University', 3], 9);
-createStudent('Nazar', 'Nazarov', ['Lviv Polytehnic University', 2], 4);
-createStudent('Pavlo', 'Pavlov', ['Ivan Franko University', 3], 10);
-createStudent('Andtiy', 'Andtiyev', ['Lviv Forest engineering University',1], 9);
-createStudent('Oksana', 'Pavlova', ['Ivan Franko University', 3], 6);
-createStudent('Stepan', 'Stepanov', ['Lviv Polytehnic University', 2], 9);
-createStudent('Bogdan', 'Bogdanov', ['Ivan Franko University', 3], 6);
-createStudent('Igor', 'Igorov', ['Lviv Forest engineering University',1], 8);
-createStudent('Maryana', 'Bogdanova', ['Ivan Franko University', 3], 7);
-
-createWorker('Vasya', 'Vasylyov', ['Lviv Forest engineering University',1], 8, 'work', 'frontend',  [ 2018, 2019,'SoftServe'], ['Lasoft', 2019, 2020]);
-createWorker('Ivan', 'Ivanov', ['Ivan Franko University', 3], 7, 'work', 'frontend',  ['SoftServe', 2017, 2018], ['Lasoft', 2018, 2019]);
-
-createWorker('Maryan', 'Maryanov', ['Lviv Forest engineering University',1], 8, 'work', 'backend', [ 2018, 2019,'Global Logic']);
-createWorker('Lida', 'Igorova', ['Ivan Franko University', 3], 7, 'work', 'backtend', ['Lasoft', 2018, 2019]);
-
-createCompany("Website development", [21, 23], "First Company", 2020);
-createCompany("Software development", [22, 24], "Second Company", 2019);
+// task 1)Створити список з 20 студентів.
+createStudents();
 
 // - getBaseInfo - вивести ім'я прізвище ВНЗ і середній бал
 console.log(getBaseInfoFunc(5));
-// - getWorkingInfo - виводить ім'я прізвище професію і історію
-console.log(getWorkingInfoFunc(21));
-// updateHistory - оновліює історію роботи
-updateHistoryFunc(21 , ['Global Logic', 2020, 2020]);
-// - hire - приймає екземпляр класу студент і створює на основі нього екземпляр класу працівник і додає до себе в масив працівників
-hireStudent(1, 1, 'frontend');
-// - fire - звільняє працівника
-fireWorker(1, 21);
-// - close - закрити компанію, всі працівники будут звільнені
-closeCompany(1);
 
+// updateHistory - оновліює історію роботи
+updateHistoryFunc(1 , ['Global Logic', 2020, 2020]);
+
+// task 2)Створити 2 компанії
+createCompany("Website development", "First Company");
+createCompany("Software development", "Second Company");
+
+// - hire - приймає екземпляр класу студент і створює на основі нього екземпляр класу працівник і додає до себе в масив працівників
+hireStudent(0, 1, 'frontend');
+
+// task 3) Кожна компанія повинна найняти по 5 студентів(спочатку найкращих, базуючись по середньому балу)
+hireStudents(0, ['backend', 'frontend','backend', 'frontend','backend']);
+hireStudents(1, ['backend', 'frontend','backend', 'frontend','backend']);
+
+// - getWorkingInfo - виводить ім'я прізвище професію і історію
+console.log(getWorkingInfoFunc(1));
+
+// task 4) Відобразити всіх сутдентів, що не отримали роботу
 console.log(students);
-console.log(workers);
+
+// task 5) Звільнити 2 людей з 1 компанії
+fireWorker(0, 0);
+fireWorker(0, 0);
 console.log(companies);
+
+// task 6) Найняти 1 звільнену людину в 2 компанії
+hireUnemployedWorker(1, 0);
+
+// task 7) Відобразити всіх працівників без роботи.
+console.log(workersUnemployer);
+
+// task 8) Закрити 1 компанію
+// - close - закрити компанію, всі працівники будут звільнені
+closeCompany(0);
+
+// task 9) Відобразити всіх працівників ( з їх історіями і робочим статусом)
+console.log(showWorkers());
+
+
+
