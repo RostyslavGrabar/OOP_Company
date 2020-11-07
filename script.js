@@ -165,6 +165,31 @@ function createStudents(){
         new Student('Maryana', 'Bogdanova', {"name": 'Ivan Franko University', "prestige": 3}, 7),
     ];
     students.push(...studentsArray);
+
+    let btnTask1 = document.querySelector("#btn-task-1");
+    let outTask1 = document.querySelector("#out-task-1");
+
+    btnTask1.removeEventListener("click", createStudents);
+    btnTask1.setAttribute("disabled", "disabled");
+    let out = `<table cellspacing="2" border="1" cellpadding="5"> <thead> <tr> <th> <strong> № </strong> </th>`;
+
+    for (let key in students[0]) {
+        key = key.toUpperCase();
+        out += `<th align="center"> <strong> ${key} </strong> </th>`;
+    }
+    for (let i = 0; i < studentsArray.length; i++) {
+        out += `<tr> <td> ${i+1} </td> `;
+        for (const key in studentsArray[i]) {
+            if(key == "university"){
+                out += `<td align="center"> ${studentsArray[i][key]['name']} </td>`;
+            } else {
+                out += `<td align="center"> ${studentsArray[i][key]} </td>`;
+            }
+        }
+        out += `</tr> `
+    }
+    outTask1.innerHTML = out;
+    document.querySelector("#btn-task-2").removeAttribute("disabled");
 }
 
 function getBaseInfoFunc(id){
@@ -244,13 +269,40 @@ function showWorkers(){
 }
 
 // ============= company functions ==================
-function createCompany(activity,  name){
-    if(validate(arguments, arguments.callee.length) === false){
-        console.error(`inncorect data`);
+function createCompany(){
+    let name = document.querySelector("input[name='companyName']").value;
+    let activity = document.querySelector("input[name='companyActivity']").value;
+    let infoError = document.querySelector("#error-task-2");
+    if(name === '' && activity === ''){
+        infoError.innerHTML = "inncorect data";
         return false;
     }
+    for (let i = 0; i < companies.length; i++) {
+        if(companies[i].name === name){
+            infoError.innerHTML = "company already exists";
+            return false;
+        }
+    }
+    infoError.innerHTML = "";
     const company = new Company(activity,  name);
+
+    document.querySelector("#out-task-2").innerHTML += "New company: " + company.name +  "</br>";
+    document.querySelector("#btn-task-3").removeAttribute("disabled");
+    let optionTask3= document.createElement("option");
+    optionTask3.innerHTML = company.name;
+    optionTask3.value = company.name;
+    document.querySelector("#task-3-select").appendChild(optionTask3);
+
     companies.push(company);
+
+    if (companies.length == 2) {
+        document.querySelector("#btn-task-2").removeEventListener("click", createCompany);
+        document.querySelector("#btn-task-2").setAttribute("disabled", "disabled");        
+    }
+    if(students.length < 5){
+        document.querySelector("#btn-task-3").setAttribute("disabled", "disabled");
+    }
+
 }
 
 function hireStudent(idCompany, idStudent ,profession){
@@ -258,7 +310,6 @@ function hireStudent(idCompany, idStudent ,profession){
         console.error(`inncorect data`);
         return false;
     }
-    // const student = students.find(item => item.id == idStudent);
     if(companies[idCompany] === undefined || students[idStudent] === undefined){
         console.error(`inncorect data, student didn't hire`);
         return false;
@@ -266,19 +317,39 @@ function hireStudent(idCompany, idStudent ,profession){
     companies[idCompany].hire(students[idStudent], profession);
 }
 
-function hireStudents(idCompany, jobs){
-    if(validate(arguments, arguments.callee.length) === false){
-        console.error(`inncorect data`);
-        return false;
-    }    
+function hireStudents(){
+    const nameCompany = document.querySelector("#task-3-select").value;
+    let jobs = ['backend', 'frontend','backend', 'frontend','backend'];  
+    let idCompany;
+    companies.forEach((item, index) => {
+       if(item.name === nameCompany){
+           idCompany = index;
+       }
+    });
     if(companies[idCompany] === undefined){
         console.error(`inncorect data, student didn't hire`);
         return false;
     }
-    students.sort((a, b) => b.avgMark - a.avgMark);    
-    // let bestStudents = students.slice(0 , 5);
-    for (let i = 0; i < 5; i++) {
-        hireStudent(idCompany, i, jobs[i]);        
+    students.sort((a, b) => a.avgMark - b.avgMark); 
+
+    if(students.length == 5){
+        for (let i = 4; i >= 0; i--) {
+            let student = students[i];
+            console.log(i);
+            hireStudent(idCompany, i, jobs[i]); 
+            document.querySelector("#out-task-3").innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
+        }
+    } else {
+        for (let i = 0; i < 5; i++) {
+            let student = students[i];
+            console.log(students);
+            hireStudent(idCompany, i, jobs[i]); 
+            document.querySelector("#out-task-3").innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
+        }
+    }
+
+    if(students.length < 5){
+        document.querySelector("#btn-task-3").setAttribute("disabled", "disabled");
     }
 }
 
@@ -320,55 +391,43 @@ function closeCompany(idCompany) {
     companies = companies.filter(company => company != undefined)
 }
 
-
 let students = [];
 let workers = [];
 let workersUnemployer = [];
 let companies = [];
 
 // task 1)Створити список з 20 студентів.
-createStudents();
-
-// - getBaseInfo - вивести ім'я прізвище ВНЗ і середній бал
-console.log(getBaseInfoFunc(5));
-
-// updateHistory - оновліює історію роботи
-updateHistoryFunc(1 , ['Global Logic', 2020, 2020]);
+document.querySelector("#btn-task-1").addEventListener("click", createStudents);
 
 // task 2)Створити 2 компанії
-createCompany("Website development", "First Company");
-createCompany("Software development", "Second Company");
-
-// - hire - приймає екземпляр класу студент і створює на основі нього екземпляр класу працівник і додає до себе в масив працівників
-hireStudent(0, 1, 'frontend');
+document.querySelector("#btn-task-2").addEventListener("click", createCompany);
 
 // task 3) Кожна компанія повинна найняти по 5 студентів(спочатку найкращих, базуючись по середньому балу)
-hireStudents(0, ['backend', 'frontend','backend', 'frontend','backend']);
-hireStudents(1, ['backend', 'frontend','backend', 'frontend','backend']);
+document.querySelector("#btn-task-3").addEventListener("click",hireStudents);
 
 // - getWorkingInfo - виводить ім'я прізвище професію і історію
-console.log(getWorkingInfoFunc(1));
+// console.log(getWorkingInfoFunc(1));
 
-// task 4) Відобразити всіх сутдентів, що не отримали роботу
-console.log(students);
+// // task 4) Відобразити всіх сутдентів, що не отримали роботу
+// console.log(students);
 
-// task 5) Звільнити 2 людей з 1 компанії
-fireWorker(0, 0);
-fireWorker(0, 0);
-console.log(companies);
+// // task 5) Звільнити 2 людей з 1 компанії
+// fireWorker(0, 0);
+// fireWorker(0, 0);
+// console.log(companies);
 
-// task 6) Найняти 1 звільнену людину в 2 компанії
-hireUnemployedWorker(1, 0);
+// // task 6) Найняти 1 звільнену людину в 2 компанії
+// hireUnemployedWorker(1, 0);
 
-// task 7) Відобразити всіх працівників без роботи.
-console.log(workersUnemployer);
+// // task 7) Відобразити всіх працівників без роботи.
+// console.log(workersUnemployer);
 
-// task 8) Закрити 1 компанію
-// - close - закрити компанію, всі працівники будут звільнені
-closeCompany(0);
+// // task 8) Закрити 1 компанію
+// // - close - закрити компанію, всі працівники будут звільнені
+// closeCompany(0);
 
-// task 9) Відобразити всіх працівників ( з їх історіями і робочим статусом)
-console.log(showWorkers());
+// // task 9) Відобразити всіх працівників ( з їх історіями і робочим статусом)
+// console.log(showWorkers());
 
 
 
