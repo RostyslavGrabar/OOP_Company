@@ -59,12 +59,17 @@ class Company{
         let date = new Date().getFullYear();
         if(person.__proto__ === Student.prototype){            
             let worker = new Worker(person.name, person.surname, person.university, person.avgMark, "work", profession);
+            let out = `<tr data-id-worker="${person.surname}" data-id-company="${this.name}">`;
             this.setSalaryForWorker(worker);
             this.workers.push(worker);
             this.countWorkers = this.workers.length;
             worker.dateHire = date;
             workers.push(worker);
             students = students.filter(item => person != item);
+            if(document.querySelector("#company-workers")){            
+                showCompanyWorkers()
+            }
+            document.querySelector("#btn-task-5").removeAttribute("disabled");
         } else {
             this.setSalaryForWorker(person);
             this.workers.push(person);
@@ -86,7 +91,6 @@ class Company{
     }
     close(){
         this.workers.forEach(worker => {
-            workersUnemployer.push(worker);
             this.fire(worker);
         });
         for (const key in this) {
@@ -188,8 +192,10 @@ function createStudents(){
         }
         out += `</tr> `
     }
+    out += `</table> `
     outTask1.innerHTML = out;
     document.querySelector("#btn-task-2").removeAttribute("disabled");
+    document.querySelector("#btn-task-4").removeAttribute("disabled");
 }
 
 function getBaseInfoFunc(id){
@@ -198,6 +204,33 @@ function getBaseInfoFunc(id){
         people = [...people, ...workers];
     }
     return people[id].getBaseInfo();        
+}
+
+function showUnemployedStudents(){
+    let out = `<table id="unemployed-students" cellspacing="2" border="1" cellpadding="5"> <thead> <tr> <th> <strong> № </strong> </th>`;
+    let outTask4 = document.querySelector("#out-task-4");
+    for (let key in students[0]) {
+        key = key.toUpperCase();
+        out += `<th align="center"> <strong> ${key} </strong> </th>`;
+    }
+    for (let i = 0; i < students.length; i++) {
+        out += `<tr> <td> ${i+1} </td> `;
+        for (const key in students[i]) {
+            if(key == "university"){
+                out += `<td align="center"> ${students[i][key]['name']} </td>`;
+            } else {
+                out += `<td align="center"> ${students[i][key]} </td>`;
+            }
+        }
+        out += `</tr> `
+    }
+    out += `</table> `
+
+    outTask4.innerHTML = out;
+    if (students.length === 0) {
+        document.querySelector("#btn-task-4").setAttribute("disabled", "disabled");
+        outTask4.innerHTML = "";
+    }
 }
 // ============= worker functions ==================
 function createWorker(name, surname, university, avgMark,  workStatus, profession, salary, ...history){
@@ -248,24 +281,26 @@ function unemployedWorkers(){
 }
 
 function showWorkers(){
-    str = "Workers History and Worker Status \n";
+
+    this.innerHTML = "update";
+    let outTask9 = document.querySelector("#out-task-9");
+    let out = `<table id="unemployed-students" cellspacing="2" border="1" cellpadding="5"> <thead>  <tr> <th align="center"> Name </th> <th align="center"> Surname </th> <th align="center"> Status </th> <th align="center"> History </th>  </tr></thead>`;    
     workers.forEach(worker => {
-        str +=  worker.surname + " " + worker.name + "\n";
-        str += "Worker Status: " + worker.workStatus + "\n";
-        str +=  "History: \n";
-        if(worker.history.length == 0){
-            str += "no history \n"
+        out += `<tr><td align="center"> ${worker.name} </td>`;
+        out += `<td align="center"> ${worker.surname} </td>`;
+        out += `<td align="center"> ${worker.workStatus} </td>`;
+        if(worker.history.length === 0){
+            out += `<td align="center"> no history`;
         } else {
-            worker.history.forEach(item => {
-                str += item.WorkPlace + "\n";
-                str += "Years: " + item.From + "-" + item.To + "\n\n";
-            })
+            out += `<td align="center"> `;
+            for (let i = 0; i < worker.history.length; i++) {     
+                out += `${worker.history[i]["WorkPlace"]}: ${worker.history[i]["From"]} - ${worker.history[i]["To"]} </br>`;                
+            }
         }
-
-        str+= '\n' + '=================' + '\n';
-    });
-
-    return str;
+        out +=`</td></tr>`; 
+    })
+    out +=`</table>`; 
+    outTask9.innerHTML = out;
 }
 
 // ============= company functions ==================
@@ -285,18 +320,23 @@ function createCompany(){
     }
     infoError.innerHTML = "";
     const company = new Company(activity,  name);
+    let taskSelects = ["#task-3-select","#task-6-select", "#task-8-select"];
 
-    document.querySelector("#out-task-2").innerHTML += "New company: " + company.name +  "</br>";
+    document.querySelector("#out-task-2").innerHTML = "New company: " + company.name +  "</br>";
     document.querySelector("#btn-task-3").removeAttribute("disabled");
-    let optionTask3= document.createElement("option");
-    optionTask3.innerHTML = company.name;
-    optionTask3.value = company.name;
-    document.querySelector("#task-3-select").appendChild(optionTask3);
+    document.querySelector("#btn-task-8").removeAttribute("disabled");
+
+    for (let i = 0; i < taskSelects.length; i++) {
+        document.querySelector(`${taskSelects[i]}`).removeAttribute("disabled");
+        let option= document.createElement("option");
+        option.innerHTML = company.name;
+        option.value = company.name;
+        document.querySelector(`${taskSelects[i]}`).appendChild(option);
+    }
 
     companies.push(company);
 
     if (companies.length == 2) {
-        document.querySelector("#btn-task-2").removeEventListener("click", createCompany);
         document.querySelector("#btn-task-2").setAttribute("disabled", "disabled");        
     }
     if(students.length < 5){
@@ -320,7 +360,12 @@ function hireStudent(idCompany, idStudent ,profession){
 function hireStudents(){
     const nameCompany = document.querySelector("#task-3-select").value;
     let jobs = ['backend', 'frontend','backend', 'frontend','backend'];  
+    let outTask3 = document.querySelector("#out-task-3");
     let idCompany;
+    let out = "";
+
+    outTask3.innerHTML = "";
+
     companies.forEach((item, index) => {
        if(item.name === nameCompany){
            idCompany = index;
@@ -335,60 +380,155 @@ function hireStudents(){
     if(students.length == 5){
         for (let i = 4; i >= 0; i--) {
             let student = students[i];
-            console.log(i);
             hireStudent(idCompany, i, jobs[i]); 
-            document.querySelector("#out-task-3").innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
+            outTask3.innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
         }
     } else {
         for (let i = 0; i < 5; i++) {
             let student = students[i];
-            console.log(students);
             hireStudent(idCompany, i, jobs[i]); 
-            document.querySelector("#out-task-3").innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
+            outTask3.innerHTML += "<strong>Company - " + `"${companies[idCompany].name}"` + "</strong> " + student.surname + " " + student.name + " " + jobs[i] + " developer" +"</br>";
         }
     }
-
     if(students.length < 5){
         document.querySelector("#btn-task-3").setAttribute("disabled", "disabled");
     }
+    if(document.querySelector("#unemployed-students")){
+        showUnemployedStudents();
+    }
+    document.querySelector("#btn-task-9").removeAttribute("disabled");
+    
 }
 
-function hireUnemployedWorker(idCompany, idWorker){
-    if(validate(arguments, arguments.callee.length) === false){
-        console.error(`inncorect data`);
-        return false;
-    }    
-    if(workersUnemployer[idWorker] === undefined ){
-        console.error(`inncorect data, worker didn't hire`);
-        return false;
+function hireUnemployedWorker(workerSurname, companyName){
+    companies.forEach(item => {
+        if(item.name === companyName){
+            for (let i = 0; i < workersUnemployer.length; i++) {
+                if(workersUnemployer[i].surname === workerSurname){
+                    item.hire(workersUnemployer[i]);
+                }
+            }
+        }
+    })
+    let fireWorkers = document.querySelectorAll(".fire-workers");
+    fireWorkers.forEach(item => {
+        if(item.dataset.idWorker === workerSurname){
+            item.remove();
+        }
+    })
+    if(workersUnemployer.length === 0){
+        document.querySelector("#btn-task-7").setAttribute("disabled","disabled");
+        document.querySelector("#out-task-6").innerHTML = "";
+        document.querySelector("#out-task-7").innerHTML = ""; 
+        document.querySelector("#btn-task-7").innerHTML = "Show workers";
+
     }
-    companies[idCompany].hire(workersUnemployer[idWorker]);
 }
 
-function fireWorker(idCompany, idWorker){
-    if(validate(arguments, arguments.callee.length) === false){
-        console.error(`inncorect data`);
-        return false;
-    }
-    if(companies[idCompany] === undefined || workers[idWorker] === undefined){
-        console.error(`inncorect data, worker didn't fire`);
-        return false;
-    }
-    companies[idCompany].fire(companies[idCompany].workers[idWorker]);
+function showCompanyWorkers(){
+    let outTask5 = document.querySelector("#out-task-5");
+    outTask5.innerHTML = "";
+    companies.forEach(company => {
+        let div = document.createElement("DIV");
+        div.setAttribute("data-id", company.name);
+        let out = `<table id="company-workers" data-id="${company.name}" width="700" cellspacing="2" border="1" cellpadding="5"> <thead> <tr> <th colspan="5" align="center"><strong> ${company.name.toUpperCase()} </strong></th></tr>`;
+        out += `<tr> <th align="center"> Name </th> <th align="center"> Surname </th> <th align="center"> Salary </th> <th align="center"> Profession </th> <th align="center"> Fire Worker </th></tr>`;    
+        company.workers.forEach(worker => {
+            out += `<tr data-id-worker="${worker.surname}" data-id-company="${company.name}">`;
+            out += `<td align="center"> ${worker.name} </td>`;
+            out += `<td align="center"> ${worker.surname} </td>`;
+            out += `<td align="center"> ${worker.salary} </td>`;
+            out += `<td align="center"> ${worker.profession} </td>`;
+            out += `<td align="center"> <button class="fire" data-id-worker="${worker.surname}" data-id-company="${company.name}"> Fire </button> </td> </tr>`;
+            
+        })
+        div.innerHTML = out;
+        outTask5.appendChild(div);
+        let btnFire = document.querySelectorAll(".fire");
+        btnFire.forEach(fire => fire.addEventListener("click", fireWorker));
+    });
+    document.querySelector("#btn-task-5").innerHTML = "update";
+    
 }
 
-function closeCompany(idCompany) {
-    if(validate(arguments, arguments.callee.length) === false){
-        console.error(`inncorect data`);
-        return false;
+function fireWorker(){
+    nameCompany = this.dataset.idCompany;
+    surnameWorker = this.dataset.idWorker;
+    companies.forEach( company => {
+        if(company.name === nameCompany){
+            for (let i = 0; i < company.workers.length; i++) {
+                if(company.workers[i]["surname"] === surnameWorker){
+                    company.fire(company.workers[i]);
+                    document.querySelector(`tr[data-id-worker="${this.dataset.idWorker}"][data-id-company="${this.dataset.idCompany}"]`).remove();
+                    document.querySelector("#btn-task-6").removeAttribute("disabled");
+                    document.querySelector("#btn-task-7").removeAttribute("disabled");
+                    if(company.workers.length === 0){
+                        document.querySelector(`div[data-id="${this.dataset.idCompany}"]`).remove();
+                    }
+                    return true;
+                }
+            }
+        }
+    });
+}
+
+function showFireWorkers(){
+    let out = `<table id="company-workers" width="700" cellspacing="2" border="1" cellpadding="5"> <thead> <tr>`;
+    out += `<th align="center"> Name </th> <th align="center"> Surname </th>  <th align="center"> Hire Worker </th></tr>`; 
+    workersUnemployer.forEach(worker => {
+        out += `<tr class="fire-workers" data-id-worker="${worker.surname}" >`;
+        out += `<td align="center"> ${worker.name} </td>`;
+        out += `<td align="center"> ${worker.surname} </td>`;
+        out += `<td align="center"> <button class="hire" data-id-worker="${worker.surname}" "> Hire </button> </tr>`;
+    });   
+    document.querySelector("#out-task-6").innerHTML = out;
+    document.querySelector("#btn-task-6").innerHTML = "update";
+    document.querySelectorAll(".hire").forEach(item => {
+        item.addEventListener("click", () => hireUnemployedWorker(item.dataset.idWorker, document.querySelector("#task-6-select").value));
+    })
+}
+
+function showUnemployedWorkers(){
+    let out = `<table id="company-workers" width="700" cellspacing="2" border="1" cellpadding="5"> <thead> <tr>`;
+    out += `<th align="center"> Name </th> <th align="center"> Surname </th> </tr>`; 
+    workersUnemployer.forEach(worker => {
+        out += `<tr> <td align="center"> ${worker.name} </td>`;
+        out += `<td align="center"> ${worker.surname} </td> </tr>`;
+    });   
+    document.querySelector("#out-task-7").innerHTML = out;
+    document.querySelector("#btn-task-7").innerHTML = "update";
+
+
+}
+
+function closeCompany() {
+    let companyName = document.querySelector("#task-8-select").value;
+    companies.forEach(company => {
+        if(company.name === companyName){
+            company.close();
+            delete company;
+            document.querySelector("#out-task-8").innerHTML = "Company: " + companyName + " closed";
+            document.querySelector("#btn-task-8").setAttribute("disabled","disabled");
+            companies = companies.filter(item => company != item);
+        }
+    })
+    if(workersUnemployer.length != 0){
+        document.querySelector("#btn-task-7").removeAttribute("disabled");            
     }
-    if(!companies[idCompany]){
-        console.error(`inncorect data, company didn't close`);
-        return false;
+    let taskElements = ["#task-3-select","#task-6-select", "#task-8-select","#btn-task-5", "#btn-task-3", "#btn-task-6", "#btn-task-8"];
+    let taskSelects = ["#task-3-select","#task-6-select", "#task-8-select"];
+    for (let i = 0; i < taskSelects.length; i++) {
+        let option = document.querySelector(`${taskSelects[i]}>option[value="${companyName}"]`);
+        option.remove();
     }
-    companies[idCompany].close();
-    delete companies[idCompany];   
-    companies = companies.filter(company => company != undefined)
+    document.querySelector("#out-task-6").innerHTML = "";
+
+    if(companies.length === 0){
+        for (let i = 0; i < taskElements.length; i++) {
+            document.querySelector(`${taskElements[i]}`).setAttribute("disabled","disabled");            
+        }
+    }
+
 }
 
 let students = [];
@@ -405,28 +545,24 @@ document.querySelector("#btn-task-2").addEventListener("click", createCompany);
 // task 3) Кожна компанія повинна найняти по 5 студентів(спочатку найкращих, базуючись по середньому балу)
 document.querySelector("#btn-task-3").addEventListener("click",hireStudents);
 
-// - getWorkingInfo - виводить ім'я прізвище професію і історію
-// console.log(getWorkingInfoFunc(1));
+// task 4) Відобразити всіх сутдентів, що не отримали роботу
+document.querySelector("#btn-task-4").addEventListener("click", showUnemployedStudents);
 
-// // task 4) Відобразити всіх сутдентів, що не отримали роботу
-// console.log(students);
+// task 5) Звільнити 2 людей з 1 компанії
+document.querySelector("#btn-task-5").addEventListener("click", showCompanyWorkers);
 
-// // task 5) Звільнити 2 людей з 1 компанії
-// fireWorker(0, 0);
-// fireWorker(0, 0);
-// console.log(companies);
+// task 6) Найняти 1 звільнену людину в 2 компанії
+document.querySelector("#btn-task-6").addEventListener("click", showFireWorkers);
 
-// // task 6) Найняти 1 звільнену людину в 2 компанії
-// hireUnemployedWorker(1, 0);
+// task 7) Відобразити всіх працівників без роботи.
+document.querySelector("#btn-task-7").addEventListener("click", showUnemployedWorkers);
 
-// // task 7) Відобразити всіх працівників без роботи.
-// console.log(workersUnemployer);
-
-// // task 8) Закрити 1 компанію
-// // - close - закрити компанію, всі працівники будут звільнені
-// closeCompany(0);
+// task 8) Закрити 1 компанію
+document.querySelector("#btn-task-8").addEventListener("click", closeCompany);
 
 // // task 9) Відобразити всіх працівників ( з їх історіями і робочим статусом)
+document.querySelector("#btn-task-9").addEventListener("click", showWorkers);
+
 // console.log(showWorkers());
 
 
