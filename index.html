@@ -4,99 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
-        <p> <strong>task 1)</strong> Створити список з 20 студентів.</p>
-        <button id="btn-task-1">Create 20 students</button>
-        <div id="out-task-1"></div>
-    </div>
+    <div class=" bg--main">
+        <div class="container">
+            <!-- task 1 -->
+            <div class="task-item">
+                <div class="row row--between single-button-container">
+                    <p> <strong>task 1)</strong> Створити список з 20 студентів.</p>
+                    <button id="btn-task-1" class="btn-tasks">Create 20 students</button>
+                </div>
 
-    <div>
-        <p> <strong>task 2)</strong> Створити 2 компанії.</p>
-        <div>
-            <label for="companyName">CompanyName: <input type="text" name="companyName" required></label>
-            <label for="companyActivity">Activity: <input type="text" name="companyActivity" required></label>
+                <div id="out-task-1"></div>
+            </div>
+
+            <!-- task 2 -->
+            <div class="task-item">
+                <p> <strong>task 2)</strong> Створити 2 компанії.</p>
+                <div class="row row--end create-company ">
+                    <div class="row row--between type-data row--wrap">
+                        <div class="type-data-info">
+                            <input type="text" name="companyName" placeholder="CompanyName" required>
+                            <input type="text" name="companyActivity" placeholder="Activity" required>
+                        </div>
+                        <div>
+                            <button id="btn-task-2" class="btn-tasks"disabled >Create company</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="error-task-2" class="error-out"></div>
+  
+                <div id="out-task-2" class="out-info"></div>
+            </div>
+        
+            <!-- task 3 -->
+            <div class="task-item">
+                <p> <strong>task 3)</strong>  Кожна компанія повинна найняти по 5 студентів(спочатку найкращих, базуючись по середньому балу)</p>
+                <div class="row row--end choose-company">
+                    <div class="row row--between type-data row--wrap">
+                        <div class="type-data-info">
+                            <label for="selectTask3">Choose Company:
+                                <select disabled id="task-3-select" class="choose-company-item" name="selectTask3">
+                                    <option disabled>Choose Company: </option>
+                                </select>
+                            </label>    
+                        </div>
+       
+                        <div>
+                            <button id="btn-task-3" class="btn-tasks" disabled>Hire 5 students</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="out-task-3"></div>
+            </div>
+        
+            <!-- task 4 -->
+
+            <div class="task-item">
+                <div class="row row--between single-button-container">
+                    <p> <strong>task 4)</strong>  Відобразити всіх сутдентів, що не отримали роботу</p>     
+                    <button id="btn-task-4" class="btn-tasks" disabled> Show students </button>
+                </div>
+                <div id="out-task-4"></div>
+            </div>
+        
+            <!-- task 5 -->
+            <div class="task-item">
+                <div class="row row--between single-button-container">
+                    <p> <strong>task 5)</strong> Звільнити 2 людей з 1 компанії</p>                     
+                    <button id="btn-task-5" class="btn-tasks" disabled> Show workers </button>
+                </div>
+                <div id="out-task-5" class="fire-workers"></div>
+            </div>
+        
+
+
+            <!-- task 6 -->
+            <div class="task-item">
+                <p> <strong>task 6)</strong> Найняти 1 звільнену людину в 2 компанії</p>  
+                <div class="row row--end choose-company">
+                    <div class="row row--between type-data row--wrap">
+                        <div class="type-data-info">
+                            <label for="selectTask6">Choose Company:
+                                <select disabled id="task-6-select" class="choose-company-item" name="selectTask6">
+                                    <option disabled>Choose Company: </option>
+                                </select>
+                            </label>
+                        </div>                        
+                        <div>
+                            <button id="btn-task-6" class="btn-tasks" disabled> Show workers </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row--center">
+                    <div id="out-task-6" class=" table--max-col-3"></div>
+                </div>  
+            </div>
+        
+            <!-- task 7 -->
+            <div class="task-item">
+                <div class="row row--between single-button-container">
+                    <p> <strong>task 7)</strong> Відобразити всіх працівників без роботи.</p>  
+                    <button id="btn-task-7" class="btn-tasks" disabled> Show workers </button>
+                </div>
+                <div class="row row--center">
+                    <div id="out-task-7" class=" table--max-col-3"></div>
+                </div>
+            </div>
+        
+            <!-- task 8 -->
+            <div class="task-item">
+                <p> <strong>task 8)</strong>  Закрити 1 компанію.</p> 
+                <div class="row row--end choose-company">
+                    <div class="row row--between type-data row--wrap">
+                        <div class="type-data-info">
+                            <label for="selectTask8">Choose Company: 
+                                <select disabled id="task-8-select" class="choose-company-item" name="selectTask8">
+                                    <option disabled>Choose Company: </option>
+                                </select>
+                            </label>
+                        </div>  
+                        <div>
+                            <button id="btn-task-8" class="btn-tasks" disabled> Close company </button>
+                        </div>
+                    </div>
+                </div>    
+                <div id="out-task-8" class="out-info"></div>
+            </div>
+
+            <!-- task 9 -->
+            <div class="task-item">
+                <div class="row row--between single-button-container">
+                    <p> <strong>task 9)</strong> Відобразити всіх працівників ( з їх історіями і робочим статусом)</p> 
+                    <button id="btn-task-9" class="btn-tasks" disabled> Show workers </button>
+                </div>
+                <div id="out-task-9"></div>        
+            </div>
         </div>
-        <div id="error-task-2"></div>
-        <div>
-            <button id="btn-task-2" disabled >Create company</button>
-        </div>
-        <div id="out-task-2"></div>
     </div>
-
-    <div>
-        <p> <strong>task 3)</strong>  Кожна компанія повинна найняти по 5 студентів(спочатку найкращих, базуючись по середньому балу)</p>
-        <label for="selectTask3">Choose Company:
-            <select disabled id="task-3-select" name="selectTask3">
-                <option disabled>Choose Company: </option>
-            </select>
-        </label>       
-        <div>
-            <button id="btn-task-3" disabled>Hire 5 students</button>
-        </div>
-        <div id="out-task-3"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 4)</strong>  Відобразити всіх сутдентів, що не отримали роботу</p>     
-        <div>
-            <button id="btn-task-4" disabled> Show students </button>
-        </div>
-        <div id="out-task-4"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 5)</strong> Звільнити 2 людей з 1 компанії</p>     
-        <div>
-            <button id="btn-task-5" disabled> Show workers </button>
-        </div>
-        <div id="out-task-5"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 6)</strong> Найняти 1 звільнену людину в 2 компанії</p>  
-        <label for="selectTask6">which company hire worker:
-            <select disabled id="task-6-select" name="selectTask6">
-                <option disabled>Choose Company: </option>
-            </select>
-        </label>
-        <div>
-            <button id="btn-task-6" disabled> Show workers </button>
-        </div>
-        <div id="out-task-6"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 7)</strong> Відобразити всіх працівників без роботи.</p>  
-
-        <div>
-            <button id="btn-task-7" disabled> Show workers </button>
-        </div>
-        <div id="out-task-7"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 8)</strong>  Закрити 1 компанію.</p> 
-        <label for="selectTask8">Choose Company: 
-            <select disabled id="task-8-select" name="selectTask8">
-                <option disabled>Choose Company: </option>
-            </select>
-        </label>
-        <div>
-            <button id="btn-task-8" disabled> Close company </button>
-        </div>
-        <div id="out-task-8"></div>
-    </div>
-
-    <div>
-        <p> <strong>task 9)</strong> Відобразити всіх працівників ( з їх історіями і робочим статусом)</p> 
-        <div>
-            <button id="btn-task-9" disabled> Show workers </button>
-        </div>
-        <div id="out-task-9"></div>
-
-    </div>
+   
+    
     <script src="script.js"></script>
 </body>
 </html>
