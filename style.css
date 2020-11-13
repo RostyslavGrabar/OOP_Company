@@ -1,0 +1,265 @@
+/* general */
+html,body{
+    color: white;
+    font-size: 20px;
+}
+
+@media (max-width: 760px){
+    html,body{
+        /* color: white; */
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 600px){
+    html,body{
+        /* color: white; */
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 400px){
+    html,body{
+        /* color: white; */
+        font-size: 13px;
+    }
+}
+
+.container{
+    max-width: 1100px;
+    min-height: 100vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bg--main{
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+    
+}
+
+.btn-tasks{
+    cursor: pointer;
+    min-width: 160px;
+    border: 3px solid #1ecd97;
+    border-radius: 60px;
+    color: #ffffff;
+    background: #3e3f4c;
+    padding: 10px 15px;
+    transition: background 700ms;
+}
+.btn-tasks:hover{
+    background: #292a38;
+}
+
+.btn-tasks:disabled { 
+    background: #0000005c; 
+    color: #666;
+    cursor: unset;
+}
+
+.btn-tasks:focus{
+    outline: none;
+}
+
+.row{
+    display: flex;
+}
+
+.row--center{
+    justify-content: center;
+}
+
+.row--end{
+    justify-content: flex-end;
+}
+
+.row--between{
+    justify-content: space-between;
+}
+
+.row--wrap{
+    flex-wrap: wrap;
+}
+
+/* general */
+
+/* tasks */
+.task-item{
+    padding: 20px 0;
+}
+@media (max-width:900px){
+    .single-button-container{
+        display: block;
+    }
+    .single-button-container button{
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+
+.task-item p{
+    font-size: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.task-item table{
+    width: 100%;
+    margin-top: 20px;
+}
+
+@media (max-width: 400px){
+    .task-item table td{
+        padding: 0;
+    }
+    .task-item table thead{
+        font-size: 0.8rem;
+    }
+}
+
+
+.table--max-col-3{
+    flex: 0 1 700px;
+}
+
+
+.type-data-info{
+    align-self: center;
+}
+
+.type-data-info>input[type='text']{
+    border: 3px solid #1ecd97;
+    border-radius: 60px;
+    padding: 5px;
+    outline: none;
+}
+
+
+.error-out{
+    color: red;
+    text-align: center;
+
+}
+
+.out-info{
+    font-size: 1.5rem;
+    text-align: center;
+    color: black;
+    font-family: 'Dancing Script', cursive;
+}
+
+.type-data{
+    margin-top: 10px;
+    width: 80%;
+}
+
+
+
+/* create company */
+
+@media (max-width:900px){
+    .create-company>.type-data{
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    } 
+    .type-data-info{
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width:700px){
+    .type-data-info input{
+        max-width: 150px;
+    }
+    .type-data button{
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+@media (max-width:301px){
+    .create-company>.type-data{
+        text-align: center;
+    } 
+}
+/* task choose-company */
+.choose-company-item{
+    border: 3px solid #1ecd97;
+    border-radius: 60px;
+    padding: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.choose-company-item:hover{
+    background: #dfe0ec;
+    transition: background 700ms;
+}
+
+.choose-company-item:disabled { 
+    background: rgb(77, 75, 75); 
+    cursor: unset;
+
+}
+@media (max-width:900px){
+    .choose-company>.type-data{
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+
+    }
+
+}
+
+/* task-3 */
+
+.task-3-out-info:first-child{
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #1ecd97;
+}
+
+.task-3-out-item{
+    text-align: center;
+    padding: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.task-3-out-item:not(:last-child){
+    width: 22%;
+    border-right: 1px solid #1ecd97;
+}
+
+.task-3-out-item:last-child{
+    width: 34%;
+}
+
+.fire-workers td:last-child{
+    padding: 0;
+}
+
+.fire,.hire{
+    width: 100%;
+    border: 3px solid #1ecd97;
+    color: #ffffff;
+    background: #3e3f4c;
+    cursor: pointer;
+    transition: background 0.5s;
+}
+
+.fire:hover,.hire:hover{
+    background: #292a38;
+}
+
+.fire:disabled,.hire:disabled { 
+    background: #0000005c; 
+    color: #666;
+    cursor: unset;
+}
